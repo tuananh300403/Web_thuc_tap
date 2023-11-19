@@ -1,0 +1,171 @@
+<h4 class="fw-semibold py-3 mb-4"> Thống kê đơn hàng theo ngày :
+    <br>
+    <br>
+    <input type="date" id="date" class="form-control w-px-200" th:value="${date}">
+</h4>
+
+<div class="row">
+
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card h-100 border-primary" style="border-left: 5px solid">
+            <div class="card-header d-flex align-items-center justify-content-between pb-0 text-uppercase text-primary">
+                Tổng đơn hàng
+            </div>
+            <div class="card-body" >
+                <button class="fw-bold" id="completed" style="border : none" th:text="${#lists.size(billAll)}" th:onclick="|showData()|" ></button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-4 ">
+        <div class="card h-100 border-success" style="border-left: 5px solid;">
+            <div class="card-header d-flex align-items-center justify-content-between pb-0 text-uppercase text-success ">
+                Đơn hàng đang giao
+            </div>
+            <div class="card-body" >
+                <button class="fw-bold" id="delivering" style="border : none" th:text="${#lists.size(billDelivering)}" th:onclick="|showData4()|" ></button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card h-100 border-warning" style="border-left: 5px solid">
+            <div class="card-header d-flex align-items-center justify-content-between pb-0 text-uppercase text-warning">
+                Đơn yêu cầu hoàn trả
+            </div>
+            <div class="card-body">
+                <button class="fw-bold" id="return" style="border : none" th:text="${#lists.size(billReturn)}" th:onclick="|showData2()|"></button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card h-100 border-danger" style="border-left: 5px solid">
+            <div class="card-header d-flex align-items-center justify-content-between pb-0 text-uppercase text-danger">
+                Đơn chờ xử lý
+            </div>
+            <div class="card-body">
+                <button class="fw-bold" id="processing" style="border : none" th:text="${#lists.size(billProcessing)}" th:onclick="|showData3()|" ></button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="overflow-auto" id="myDiv">
+    <table class="table table-hover table-bordered overflow-hidden" style="display: none;" id="myTable4" >
+        <thead>
+        <tr class="row-table">
+            <th>#</th>
+            <th>Code bill</th>
+            <th>Name</th>
+            <th>Phone number</th>
+            <th>Time create</th>
+            <th>Payment Status</th>
+            <th>Bill Status</th>
+        </tr>
+        </thead>
+        <tbody class="table-border-bottom-0">
+        <tr th:each="listBill,billStat: ${billDelivering}" th:onclick="|oncl(${ listBill.id })|">
+            <td>
+                <strong>[(${billStat.index+1})]</strong>
+            </td>
+            <td>[(${listBill.code})]</td>
+            <td>
+                [(${listBill.customer.name})]
+            </td>
+            <td>[(${listBill.customer.phoneNumber})]</td>
+            <td>[(${listBill.createDate})]</td>
+            <td th:text="${listBill.paymentStatus == 1 ? 'Đã thanh toán' : listBill.paymentStatus == 2 ? 'Chưa thanh toán' : 'Đã hoàn tiền'}"></td>
+            <td>[(${listBill.billStatus.status})]</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="overflow-auto" id="myDiv2">
+    <table class="table table-hover table-bordered overflow-hidden" style="display: none;" id="myTable" >
+        <thead>
+        <tr class="row-table">
+            <th>#</th>
+            <th>Code bill</th>
+            <th>Name</th>
+            <th>Phone number</th>
+            <th>Time create</th>
+            <th>Payment Status</th>
+            <th>Bill Status</th>
+        </tr>
+        </thead>
+        <tbody class="table-border-bottom-0">
+        <tr th:each="listBill,billStat: ${billAll}" th:onclick="|oncl(${ listBill.id })|">
+            <td>
+                <strong>[(${billStat.index+1})]</strong>
+            </td>
+            <td>[(${listBill.code})]</td>
+            <td>
+                [(${listBill.customer.name})]
+            </td>
+            <td>[(${listBill.customer.phoneNumber})]</td>
+            <td>[(${listBill.createDate})]</td>
+            <td th:text="${listBill.paymentStatus == 1 ? 'Đã thanh toán' : listBill.paymentStatus == 2 ? 'Chưa thanh toán' : 'Đã hoàn tiền'}"></td>
+            <td>[(${listBill.billStatus.status})]</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="overflow-auto" id="myDiv3">
+    <table class="table table-hover table-bordered overflow-hidden" style="display: none;" id="myTable2" >
+        <thead>
+        <tr class="row-table">
+            <th>#</th>
+            <th>Code bill</th>
+            <th>Name</th>
+            <th>Phone number</th>
+            <th>Time create</th>
+            <th>Payment Status</th>
+            <th>Bill Status</th>
+        </tr>
+        </thead>
+        <tbody class="table-border-bottom-0">
+        <tr th:each="listBill,billStat: ${billReturn}" th:onclick="|oncl(${ listBill.id })|">
+            <td>
+                <strong>[(${billStat.index+1})]</strong>
+            </td>
+            <td>[(${listBill.code})]</td>
+            <td>
+                [(${listBill.customer.name})]
+            </td>
+            <td>[(${listBill.customer.phoneNumber})]</td>
+            <td>[(${listBill.createDate})]</td>
+            <td th:text="${listBill.paymentStatus == 1 ? 'Đã thanh toán' : listBill.paymentStatus == 2 ? 'Chưa thanh toán' : 'Đã hoàn tiền'}"></td>
+            <td>[(${listBill.billStatus.status})]</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="overflow-auto" id="myDiv4">
+    <table class="table table-hover table-bordered overflow-hidden" style="display: none;" id="myTable3" >
+        <thead>
+        <tr class="row-table">
+            <th>#</th>
+            <th>Code bill</th>
+            <th>Name</th>
+            <th>Phone number</th>
+            <th>Time create</th>
+            <th>Payment Status</th>
+            <th>Bill Status</th>
+        </tr>
+        </thead>
+        <tbody class="table-border-bottom-0">
+        <tr th:each="listBill,billStat: ${billProcessing}" th:onclick="|oncl(${ listBill.id })|">
+            <td>
+                <strong>[(${billStat.index+1})]</strong>
+            </td>
+            <td>[(${listBill.code})]</td>
+            <td>
+                [(${listBill.customer.name})]
+            </td>
+            <td>[(${listBill.customer.phoneNumber})]</td>
+            <td>[(${listBill.createDate})]</td>
+            <td th:text="${listBill.paymentStatus == 1 ? 'Đã thanh toán' : listBill.paymentStatus == 2 ? 'Chưa thanh toán' : 'Đã hoàn tiền'}"></td>
+            <td>[(${listBill.billStatus.status})]</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script th:src="@{/admin/plugin/js/dashboard.js}"></script>

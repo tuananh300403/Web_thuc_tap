@@ -1,0 +1,339 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<style>
+    .buttons_added {
+        opacity: 1;
+        display: inline-block;
+        display: -ms-inline-flexbox;
+        display: inline-flex;
+        white-space: nowrap;
+        vertical-align: top;
+    }
+
+    .is-form {
+        overflow: hidden;
+        position: relative;
+        background-color: #f9f9f9;
+        height: 2.2rem;
+        width: 1.9rem;
+        padding: 0;
+        text-shadow: 1px 1px 1px #fff;
+        border: 1px solid #ddd;
+    }
+
+    .is-form:focus, .input-text:focus {
+        outline: none;
+    }
+
+    .is-form.minus {
+        border-radius: 4px 0 0 4px;
+    }
+
+    .is-form.plus {
+        border-radius: 0 4px 4px 0;
+    }
+
+    .input-qty {
+        background-color: #fff;
+        height: 2.2rem;
+        text-align: center;
+        font-size: 1rem;
+        display: inline-block;
+        vertical-align: top;
+        margin: 0;
+        border-top: 1px solid #ddd;
+        border-bottom: 1px solid #ddd;
+        border-left: 0;
+        border-right: 0;
+        padding: 0;
+    }
+
+    .input-qty::-webkit-outer-spin-button, .input-qty::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+<div class="layout-wrapper layout-content-navbar">
+    <div class="layout-container">
+        <div class="content-wrapper">
+            <div class="container-xxl flex-grow-1 container-p-y">
+                <div class="content-wrapper">
+                    <form th:action="@{/purchase}" method="post" th:object="${billProduct}">
+                        <div class="row justify-content-center">
+                            <div class="col-md-7 mb-5">
+                                <div class="card mb-4">
+                                    <span class="card-header text-uppercase fs-5">THÔNG TIN KHÁCH HÀNG:</span>
+                                    <div class="card-body" th:id="add">
+                                        <div>
+                                            <!--                                            ten, sdt-->
+                                            <div class="row justify-content-between">
+                                                <div class="col">
+                                                    <label class="form-label">Tên người nhận</label>
+                                                    <input class="form-control" type="text" placeholder="họ và tên"
+                                                           th:field="*{name}"
+                                                           id="name" th:name="name">
+                                                </div>
+                                                <div class="col">
+                                                    <label class="form-label">Số điện thoại người nhận</label>
+                                                    <input class="form-control" type="text" placeholder="VN (+84)"
+                                                           th:field="*{phoneNumber}"
+                                                           id="phoneNumber" th:name="phoneNumber">
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <!--                                                email-->
+                                            <div class="mb-3">
+                                                <label class="form-label">Email</label>
+                                                <input type="email" class="form-control"
+                                                       placeholder="oanhpham085@gmail.com"
+                                                       th:field="*{email}"
+                                                       id="email" th:name="email">
+                                            </div>
+                                            <br>
+                                            <!--                                                address-->
+                                            <div class="mb-3">
+                                                <label class="form-label">Địa chỉ nhận hàng</label>
+                                                <input type="text" class="form-control"
+                                                       placeholder="Thôn liên trì 1, xã Yên hòa" th:field="*{address}"
+                                                       id="address" th:name="address">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Voucher</label>
+                                                <select class="form-select" id="voucher" name="voucher">
+                                                    <option value="-1">Chưa chọn voucher</option>
+                                                    <option th:value="${voucher.voucher.id}"
+                                                            th:each="voucher:${listVoucher}"
+                                                            th:if="${voucher.active==true}">[(${voucher.voucher.code})]
+                                                    </option>
+                                                </select>
+                                                <div class="mt-2">
+                                                    <span id="info-voucher" class="text-danger"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3 table-responsive">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                <tr>
+                                                    <th>Sản phẩm</th>
+                                                    <th>Giá (VNĐ)</th>
+                                                    <th>Số lượng</th>
+                                                    <th>Thành tiền (VNĐ)</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr th:each="item,itemStat:${session.list}">
+                                                    <input th:value="${item.product.id}" name="id" hidden>
+                                                    <td>
+                                                        <div class="mb-3">
+                                                            <img th:each="image:${item.product.listImage}"
+                                                                 th:if="${image.location == true}"
+                                                                 th:src="@{'/image/product/'+${image.link}}"
+                                                                 alt="" width="100px">
+                                                        </div>
+                                                        <span th:text="${item.product.product.nameProduct}"></span>
+                                                        <div>
+                                                            [ <span th:each="field:${item.product.fieldList}"
+                                                                    th:text="|${field.value} |"></span>]
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div th:if="${reduceMoney[itemStat.index]!=item.product.priceExport}">
+                                                            <span class="fs-5 text-strike-through"
+                                                                  th:text="|${#numbers.formatDecimal(item.product.priceExport,0,'COMMA',0,'POINT')}|"></span>
+                                                        </div>
+                                                        <div>
+                                                            <div th:if="${reduceMoney[itemStat.index]!=item.product.priceExport}">
+                                                                <span class=" fs-4" name="reducedMoney">[(${#numbers.formatDecimal(reduceMoney[itemStat.index],0,'COMMA',0,'POINT')})]</span>
+                                                            </div>
+                                                            <div th:if="${reduceMoney[itemStat.index]==item.product.priceExport}">
+                                                                <span class="fs-4" name="reducedMoney"
+                                                                      th:text="|${#numbers.formatDecimal(item.product.priceExport,0,'COMMA',0,'POINT')}|"></span>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <input aria-label="quantity" name="qty" class="form-control"
+                                                               th:value="${item.quantity}" hidden="hidden">
+                                                        <span class="fs-4" th:text="${item.quantity}"></span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="fs-4 total-price">[(${#numbers.formatDecimal(reduceMoney[itemStat.index]* item.quantity,0,'COMMA',0,'POINT')})]</span>
+                                                    </td>
+                                                </tr>
+                                                <hr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <hr>
+                                        <div class="row justify-content-center">
+                                            <span class="col fs-5">Tạm tính: </span>
+                                            <span class="col text-danger text-end">
+                                                <span th:text="|${#numbers.formatDecimal(total,0,'COMMA',0,'POINT')} đ|"
+                                                      class="total-pro fs-4" name="totalPrice"></span>
+                                            </span>
+                                        </div>
+                                        <div class="row justify-content-center" id="voucher-info" hidden="hidden">
+                                            <span class="col fs-5">Voucher: </span>
+                                            <span class="col text-danger text-end">
+                                                <span class="fs-4" id="voucher-reduce"></span>
+                                            </span>
+                                        </div>
+                                        <div class="row justify-content-center">
+                                            <span class="col fs-5">Tổng tiền: </span>
+                                            <span class="col text-danger text-end">
+                                                <span class="fs-4" id="total"
+                                                      th:text="|${#numbers.formatDecimal(total,0,'COMMA',0,'POINT')} đ|"></span>
+                                            </span>
+                                        </div>
+                                        <hr>
+                                        <span class="text-uppercase fs-5">Phương Thức Thanh Toán: </span>
+                                        <div class="card-body">
+                                            <div class="row gy-3">
+                                                <div class="col-md">
+                                                    <div class="form-check form-check-inline mt-3">
+                                                        <input class="form-check-input" type="radio"
+                                                               name="paymentMethod" id="inlineRadio1"
+                                                               th:value="1" checked>
+                                                        <label class="form-check-label" for="inlineRadio1">Thanh toán
+                                                            tiền mặt</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio"
+                                                               name="paymentMethod" id="inlineRadio2"
+                                                               th:value="2">
+                                                        <label class="form-check-label" for="inlineRadio2">Thanh toán
+                                                            trực tiếp qua
+                                                            VNPAY</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="d-grid gap-2 col-lg-12 mx-auto mt-4"
+                                             style="text-align: center">
+                                            <button class="btn btn-primary btn-lg" type="submit"
+                                                    onclick="return confirm('Xác nhận tạo hóa đơn')">
+                                                Đặt Hàng
+                                            </button>
+                                            <a href="/cart" class="btn btn-outline-secondary btn-lg" type="button">
+                                                Hủy
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <hr>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    console.log(parseInt(document.querySelector('.total-pro').textContent.replace(/,/g, ''), 10))
+
+    $("#voucher").on("change", function () {
+        console.log(this.value)
+        var data = {
+            id: this.value,
+        }
+        $.ajax({
+            url: "/admin/voucher/getone",
+            method: "get",
+            data: data,
+            success: function (data) {
+                console.log(data)
+                var temp = parseInt(document.querySelector('.total-pro').textContent.replace(/,/g, ''), 10)
+                if (data) {
+                    // var formattedNumber = new Intl.NumberFormat().format(data.minimumValue);
+                    if (temp >= data.minimumValue) {
+                        document.getElementById("voucher-reduce").innerText = new Intl.NumberFormat().format(data.value) + ' đ'
+                        document.getElementById("voucher-info").hidden = false
+                        document.getElementById("total").innerText = ''
+                        document.getElementById("total").innerText = new Intl.NumberFormat().format(temp - data.value)
+                    }
+                    document.getElementById('info-voucher').innerText = 'Giảm ' + new Intl.NumberFormat().format(data.value) + ' đ cho đơn hàng có giá trị từ ' + new Intl.NumberFormat().format(data.minimumValue) + ' đ'
+                } else {
+                    document.getElementById("total").innerText = new Intl.NumberFormat().format(temp) + ' đ'
+                    document.getElementById("voucher-info").hidden = true
+                    document.getElementById('info-voucher').innerText = ''
+                    document.getElementById("voucher-reduce").innerText = ''
+                }
+            }
+        })
+    })
+
+    const plus = document.querySelectorAll(".plus")
+    const minus = document.querySelectorAll(".minus")
+
+    function tinhtong() {
+        const totalPriceForm = document.querySelectorAll(".total-price")
+        const totalProForm = document.querySelector(".total-pro")
+        var totalPro = 0;
+        for (let i = 0; i < totalPriceForm.length; i++) {
+            totalPro = Number(totalPriceForm[i].textContent) + Number(totalPro);
+            console.log(totalPro);
+        }
+        totalProForm.value = totalPro
+    }
+
+    $(document).ready(
+        tinhtong(),
+        $.each(plus, function (index, item) {
+            // var temp = index
+            item.addEventListener("click", function (e) {
+                var quantityForm = document.querySelectorAll(".input-qty")
+                const totalPriceForm = document.querySelectorAll(".total-price")
+                const priceExportForm = document.querySelectorAll(".price-export")
+
+                var valueInput = quantityForm[index].value
+
+                if (valueInput < Number(quantityForm[index].getAttribute('max'))) {
+                    quantityForm[index].value = Number(valueInput) + 1
+                    valueInput = Number(valueInput) + 1
+                }
+
+                // var quantity = quantityForm[index].value
+                var priceExport = priceExportForm[index].getAttribute("value")
+                var totalPrice = Number(valueInput) * Number(priceExport)
+
+                totalPriceForm[index].innerText = totalPrice
+                const totalProForm = document.querySelector(".total-pro")
+                var totalPro = 0;
+                for (let i = 0; i < totalPriceForm.length; i++) {
+                    totalPro = Number(totalPriceForm[i].textContent) + Number(totalPro);
+                }
+
+                totalProForm.innerText = totalPro
+            })
+        }),
+        $.each(minus, function (index, item) {
+            // var temp = index
+            item.addEventListener("click", function (e) {
+
+                const totalPriceForm = document.querySelectorAll(".total-price")
+                const priceExportForm = document.querySelectorAll(".price-export")
+                var quantityForm = document.querySelectorAll(".input-qty")
+
+                var valueInput = quantityForm[index].value// = 10
+
+                if (valueInput > Number(quantityForm[index].getAttribute('min'))) {
+                    quantityForm[index].value = Number(valueInput) - 1
+                    valueInput = Number(valueInput) - 1
+                }
+
+                var priceExport = priceExportForm[index].getAttribute("value")
+                var totalPrice = Number(valueInput) * Number(priceExport)
+
+                totalPriceForm[index].innerText = totalPrice
+                tinhtong();
+            })
+        })
+    )
+
+    function xoa(x) {
+        var tr = x.parentElement.parentElement;
+        tr.remove();
+    }
+</script>
+</html>

@@ -1,0 +1,302 @@
+<h4 class="fw-semibold py-3 mb-4"> Danh sách giảm giá </h4>
+
+<div class="mb-4">
+    <div class="row justify-content-end me-4">
+        <button type="button" class="btn btn-success mb-4 w-auto" data-bs-toggle="modal" data-bs-target="#largeModal">
+            <i class='tf-icon bx bx-plus-medical'></i> Thêm giảm giá
+        </button>
+    </div>
+    <form th:action="@{/admin/coupon/save}" method="post" th:object="${coupon}" enctype="multipart/form-data">
+        <div class="modal fade" th:id="largeModal" tabindex="-1"
+             aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Thêm giảm giá</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-lg-5 col-sm-12 text-center">
+                                <div class="text-center">
+                                    <img th:src="@{'/image/default.jpg'}" alt="Chưa chọn ảnh"
+                                         class="rounded image-preview mb-3"
+                                         width="250">
+                                </div>
+                                <label class="btn btn-primary me-2 mb-4" tabindex="0">
+                                    <span class="d-none d-sm-block">Tải ảnh lên</span>
+                                    <i class="bx bx-upload d-block d-sm-none"></i>
+                                    <input type="file" class="file-input" hidden=""
+                                           accept="image/png, image/jpeg"
+                                           name="avatar">
+                                </label>
+                            </div>
+                            <div class="col-lg-7">
+                                <div class="mb-3">
+                                    <label class="form-label">Mã giảm giá:</label>
+                                    <input type="text" class="form-control" th:name="code">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Giá trị:</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" th:name="value">
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Ngày bắt đầu:</label>
+                                    <input type="date" class="form-control" th:name="dateStart">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Ngày kết thúc:</label>
+                                    <input type="date" class="form-control" th:name="dateEnd"/>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Trạng thái:</label>
+                                    <div>
+                                        <div class="form-check form-check-inline mt-3">
+                                            <input class="form-check-input" type="radio"
+                                                   th:name="active"
+                                                   th:value="true">
+                                            <label class="form-check-label">Hoạt Động</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" th:name="active"
+                                                   th:value="false">
+                                            <label class="form-check-label"
+                                            >Chưa hoạt động</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="reset" class="btn btn-secondary">Đặt lại</button>
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="card mb-3 ">
+    <div class="card-header">
+        <form class="col-12 mt-2">
+            <div class="col-12 row">
+                <div class="col-7">
+                    <div class="form-check input-group input-group-merge">
+                    <span class="input-group-text">
+                        <i class="bx bx-search"></i>
+                    </span>
+                        <input type="text" class="form-control" placeholder="Tìm id">
+                        <button class="btn btn-primary" type="button">Tìm kiếm</button>
+                    </div>
+                </div>
+                <div class="col-1">
+                    <button class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-offset="0,4"
+                            data-bs-placement="bottom" data-bs-html="true" title=""
+                            data-bs-original-title="<span>Reset filter</span>" aria-describedby="tooltip91262">
+                        <i class='bx bx-reset'></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-2 d-flex align-items-center">
+                <p>Coupon :
+                    <!--                    <span th:text="${#lists.size(listCou)}"></span>-->
+                </p>
+            </div>
+        </div>
+        <hr>
+        <div class="table-responsive text-nowrap">
+            <table class="table table-hover overflow-hidden">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Mã giảm giá</th>
+                    <th>Giá trị</th>
+                    <th>Ảnh</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody class="table-border-bottom-0">
+                <tr th:each="coupon,couponStat : ${listCou}">
+                    <td th:text="${couponStat.index+1}"></td>
+                    <td th:text="${coupon.code}"></td>
+                    <td th:text="|${coupon.value}%|"></td>
+                    <td><p>
+                        <img th:src="@{'/image/'+*{coupon.image}}"
+                             class="w-px-100"/>
+                    </p>
+                    </td>
+                    <td> <span th:text="${coupon.active} == true?'Hoạt động':'Không hoạt động'"/></td>
+                    <td>
+                        <button type="button" class="btn btn-icon btn-primary" data-bs-toggle="modal"
+                                th:data-bs-target="|#modal${coupon.id}|">
+                            <i class="bx bxs-edit-alt"></i>
+                        </button>
+
+                        <div class="modal fade" th:id="|modal${coupon.id}|" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Thông tin phiếu mua hàng</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form th:action="@{/admin/coupon/update/{id}(id=${coupon.id})}"
+                                              method="post" th:object="${coupon}" enctype="multipart/form-data">
+                                            <div class="row">
+                                                <div class="col-lg-5 col-sm-12 text-center">
+                                                    <div class="text-center">
+                                                        <img th:src="@{'/image/'+*{image}}" alt="user-avatar"
+                                                             class="rounded mb-3"
+                                                             width="250" id="uploadedImage">
+                                                    </div>
+                                                    <label th:for="upload2" class="btn btn-primary me-2 mb-4"
+                                                           tabindex="0">
+                                                        <span class="d-none d-sm-block">Upload new photo</span>
+                                                        <i class="bx bx-upload d-block d-sm-none"></i>
+                                                        <input type="file" th:id="upload2" class="account-file-input"
+                                                               hidden=""
+                                                               accept="image/png, image/jpeg"
+                                                               name="avatar">
+                                                    </label>
+                                                </div>
+                                                <div class="col-lg-7">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Mã giảm giá:</label>
+                                                        <input type="text" class="form-control" th:name="code"
+                                                               th:value="${coupon.code}">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Giá trị:</label>
+                                                        <div class="input-group">
+                                                            <input type="number" class="form-control" th:name="value"
+                                                                   th:value="${coupon.value}">
+                                                            <span class="input-group-text">%</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Ngày bắt đầu:</label>
+                                                        <input type="date" class="form-control" th:name="dateStart"
+                                                               th:value="${coupon.dateStart}"/>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Ngày kết thúc:</label>
+                                                        <input type="date" class="form-control" th:name="dateEnd"
+                                                               th:value="${coupon.dateEnd}"/>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Trạng thái :</label>
+                                                        <br>
+                                                        <div class="form-check form-check-inline mt-3">
+                                                            <input class="form-check-input" type="radio"
+                                                                   th:name="active"
+                                                                   th:value="true"
+                                                                   th:checked="${coupon.active==true}">
+                                                            <label class="form-check-label">Hoạt Động</label>
+                                                        </div>
+                                                        <div class="form-check form-check-inline">
+                                                            <input class="form-check-input" type="radio"
+                                                                   th:name="active"
+                                                                   th:value="false"
+                                                                   th:checked="${coupon.active==false}">
+                                                            <label class="form-check-label">Không hoạt động</label>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row justify-content-xl-end">
+                                                <div class="w-auto">
+                                                    <a th:href="@{'/admin/discountproduct/' + *{id}}"
+                                                       class="btn btn-primary btn-control">Các sản phẩm được giảm</a>
+                                                </div>
+                                                <div class="w-auto">
+                                                    <button type="reset"
+                                                            class="btn btn-primary btn-control">
+                                                        Đặt lại
+                                                    </button>
+                                                </div>
+                                                <div class="w-auto">
+                                                    <button type="submit"
+                                                            class="btn btn-primary btn-control"
+                                                            onclick="return confirm('Xác nhận cập nhật')">
+                                                        Update
+                                                    </button>
+                                                </div>
+                                                <div class="w-auto">
+                                                    <a th:href="@{/admin/coupon/delete/{id}(id=${coupon.id})}"
+                                                       onclick="return confirm('Xác nhận xóa')">
+                                                        <button type="button"
+                                                                class="btn btn-primary btn-control">
+                                                            Delete
+                                                        </button>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <a th:href="@{/admin/coupon/delete/{id}(id=*{coupon.id})}"
+                           onclick="return confirm('Xác nhận xóa')">
+                            <button type="button" class="btn btn-icon btn-danger">
+                                <span class="bx bxs-trash"></span>
+                            </button>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <hr class="card-separator">
+    </div>
+    <div class="card-footer">
+        <div class="d-inline-flex float-end">
+            <div class="mx-3 row" style="width: 180px">
+                <label for="select-view" class="col-form-label col-5 text-end">View:</label>
+                <div class="col-7">
+                    <select class="form-select text-start" id="select-view">
+                        <option>10</option>
+                        <option>20</option>
+                        <option>40</option>
+                        <option>80</option>
+                    </select>
+                </div>
+            </div>
+            <div aria-label="Page pagination">
+                <ul class="pagination">
+                    <li class="page-item first">
+                        <a class="page-link" href="javascript:void(0);"><i class="tf-icon bx bx-chevrons-left"></i></a>
+                    </li>
+                    <li class="page-item prev">
+                        <a class="page-link" href="javascript:void(0);"><i
+                                class="tf-icon bx bx-chevron-left"></i></a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="javascript:void(0);">1</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="javascript:void(0);">2</a>
+                    </li>
+                    <li class="page-item next">
+                        <a class="page-link" href="javascript:void(0);"><i class="tf-icon bx bx-chevron-right"></i></a>
+                    </li>
+                    <li class="page-item last">
+                        <a class="page-link" href="javascript:void(0);"><i class="tf-icon bx bx-chevrons-right"></i></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/admin/plugin/js/loadImage.js"></script>
